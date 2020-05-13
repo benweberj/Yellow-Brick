@@ -1,0 +1,2 @@
+rootProject.name='Yellow Brick'
+include ':app'
