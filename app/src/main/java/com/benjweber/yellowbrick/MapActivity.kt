@@ -5,12 +5,8 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.benjweber.yellowbrick.MapActivity.Companion.LOCATION_PERMISSION_CODE
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -29,22 +25,25 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         locationManager = (application as YBApp).locationManager
 
-        // Get the SupportMapFragment and get notified when its ready to be used.
+        // Get the SupportMapFragment and get notified when its ready to be used
         val mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFrag.getMapAsync(this)
     }
 
-    // When the map is ready to use.
+    // When the map is ready to use
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.dark_map_style))
 
         if (!locationManager.locationGranted()) getLocationPermission()
+        if (locationManager.locationGranted()) {
+            locationManager.getLastLocation { location ->
+                val myLocation = LatLng(location.latitude, location.longitude)
+                map.addMarker(MarkerOptions().position(myLocation))
+                map.moveCamera(CameraUpdateFactory.newLatLng(myLocation))
 
-        locationManager.getLastLocation { location ->
-            val myLocation = LatLng(location.latitude, location.longitude)
-            map.addMarker(MarkerOptions().position(myLocation))
-            map.moveCamera(CameraUpdateFactory.newLatLng(myLocation))
+                locationManager.startLocationUpdates()
+            }
         }
     }
 
@@ -56,7 +55,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             .setPositiveButton("Got it") { _, _ ->
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+
                     LOCATION_PERMISSION_CODE
                 )
             }
@@ -75,7 +75,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         when(requestCode) {
             LOCATION_PERMISSION_CODE -> {
                 if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("bjw", "the location permissions have been granted")
+                    Log.i("ybyb", "the location permissions have been granted")
                 }
             }
         }
