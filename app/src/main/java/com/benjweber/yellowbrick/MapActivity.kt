@@ -1,37 +1,87 @@
 package com.benjweber.yellowbrick
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.benjweber.yellowbrick.MapActivity.Companion.LOCATION_PERMISSION_CODE
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
+    private lateinit var locationManager: YBLocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        locationManager = (application as YBApp).locationManager
+
         // Get the SupportMapFragment and get notified when its ready to be used.
-        val mapFrag = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFrag.getMapAsync(this)
     }
 
-
     // When the map is ready to use.
-    // Add markers, lines, listeners, or move the camera.
-    // Make sure the user has GP services installed (prompted to install if not)
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.dark_map_style))
 
-        val uw = LatLng(47.655334, -122.303520)
-        map.addMarker(MarkerOptions().position(uw).title("Marker at UW"))
-        map.moveCamera(CameraUpdateFactory.newLatLng(uw))
+        if (!locationManager.locationGranted()) getLocationPermission()
+
+        locationManager.getLastLocation { location ->
+            val myLocation = LatLng(location.latitude, location.longitude)
+            map.addMarker(MarkerOptions().position(myLocation))
+            map.moveCamera(CameraUpdateFactory.newLatLng(myLocation))
+        }
+    }
+
+    // Explains why we need location, then asks them for permission
+    private fun getLocationPermission() {
+        AlertDialog.Builder(this)
+            .setTitle("YellowBrick Needs Your Location Permissions")
+            .setMessage("In order to get you where you need to go safely, we need to know where you are.")
+            .setPositiveButton("Got it") { _, _ ->
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                    LOCATION_PERMISSION_CODE
+                )
+            }
+            .setNegativeButton("Piss off") { _, _ -> }
+            .create()
+            .show()
+    }
+
+    // Not sure if we'll need this specific function later on
+    // Runs when the user has granted or denied location permission request
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode) {
+            LOCATION_PERMISSION_CODE -> {
+                if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                    Log.i("bjw", "the location permissions have been granted")
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_CODE = 254 // Random #
     }
 }
