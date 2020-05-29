@@ -18,12 +18,14 @@ import com.google.android.gms.maps.model.MarkerOptions
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var locationManager: YBLocationManager
+    private lateinit var crimeManager: CrimeManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
         locationManager = (application as YBApp).locationManager
+        crimeManager = (application as YBApp).crimeManager
 
         // Get the SupportMapFragment and get notified when its ready to be used
         val mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -44,6 +46,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 locationManager.startLocationUpdates()
             }
+        }
+        crimeManager.fetchCrimes { allCrimes ->
+            var crimeLimit = 100
+            allCrimes.forEach { crime ->
+                if (crimeLimit > 0) {
+                    map.addMarker(MarkerOptions().position(crime.pos))
+                }
+                crimeLimit--
+            }
+            // TODO: find a way to use all incidents, but only show relevant ones
+            // TODO: make custom markers dots that are small and color-coded
+            Log.i("ybyb", "we got ${allCrimes.size} crimes here")
         }
     }
 
