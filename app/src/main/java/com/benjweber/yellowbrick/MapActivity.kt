@@ -74,7 +74,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 crimeLimit--
             }
             // TODO: find a way to use all incidents, but only show relevant ones
-            // TODO: make custom markers dots that are small and color-coded
             Log.i("ybyb", "we got ${allCrimes.size} crimes here")
         }
     }
