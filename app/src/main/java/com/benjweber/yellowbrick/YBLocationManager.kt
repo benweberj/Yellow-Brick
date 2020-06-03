@@ -20,8 +20,10 @@ class YBLocationManager(private val context: Context) {
 
     // Gets the user's last known location and executes the given callback when done
     fun getLastLocation(onLastLocation: (Location) -> Unit) {
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) onLastLocation(location)
+        if (locationGranted()) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) onLastLocation(location)
+            }
         }
     }
 
@@ -36,7 +38,13 @@ class YBLocationManager(private val context: Context) {
             val client = LocationServices.getSettingsClient(context)
             val task = client.checkLocationSettings(builder.build())
             task.addOnSuccessListener {
-                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+                if (locationGranted()) {
+                    fusedLocationClient.requestLocationUpdates(
+                        locationRequest,
+                        locationCallback,
+                        Looper.getMainLooper()
+                    )
+                }
             }
         }
     }
