@@ -7,6 +7,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.benjweber.yellowbrick.model.Crime
 import com.google.android.gms.maps.model.LatLng
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CrimeManager(private val context: Context) {
@@ -33,10 +34,13 @@ class CrimeManager(private val context: Context) {
             val rawCrime = policeScanner.nextLine().split(",")
             val pos = LatLng(rawCrime[15].toDouble(), rawCrime[14].toDouble())
             val type = rawCrime[6]
-//            val date = rawCrime[8]
-            // TODO: convert date string to Date obj
-            val date = Date()
-            crimes.add(Crime(pos, type, date))
+            val dateString = rawCrime[8]
+
+            val formatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
+            val date = formatter.parse(dateString)
+            date?.let {
+                crimes.add(Crime(pos, type, it))
+            }
         }
         onCrimesReady(crimes)
     }

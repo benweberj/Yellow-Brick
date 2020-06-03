@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
@@ -51,12 +52,28 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             var crimeLimit = 100
             allCrimes.forEach { crime ->
                 if (crimeLimit > 0) {
-                    map.addMarker(MarkerOptions().position(crime.pos))
+                    val hue = when (crime.type) {
+                        "CAR PROWL" -> BitmapDescriptorFactory.HUE_BLUE
+                        "OTHER PROPERTY" -> BitmapDescriptorFactory.HUE_ORANGE
+                        "BURGLARY" -> BitmapDescriptorFactory.HUE_VIOLET
+                        "PROPERTY DAMAGE" -> BitmapDescriptorFactory.HUE_YELLOW
+                        "VEHICLE THEFT" -> BitmapDescriptorFactory.HUE_CYAN
+                        "ASSAULT" -> BitmapDescriptorFactory.HUE_AZURE
+                        "WARRANT ARREST" -> BitmapDescriptorFactory.HUE_GREEN
+                        "FRAUD" -> BitmapDescriptorFactory.HUE_ROSE
+                        "THREATS" -> BitmapDescriptorFactory.HUE_MAGENTA
+                        else -> {
+                            BitmapDescriptorFactory.HUE_RED
+                        }
+                    }
+
+                    map.addMarker(MarkerOptions()
+                        .position(crime.pos)
+                        .icon(BitmapDescriptorFactory.defaultMarker(hue)))
                 }
                 crimeLimit--
             }
             // TODO: find a way to use all incidents, but only show relevant ones
-            // TODO: make custom markers dots that are small and color-coded
             Log.i("ybyb", "we got ${allCrimes.size} crimes here")
         }
     }
