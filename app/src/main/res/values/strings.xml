@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Yellow Brick</string>
     <string name="title_activity_map">Map</string>
+    <string name="filtersButton">Filters</string>
+    <string name="filtersTitle">Filters</string>
 </resources>

@@ -5,8 +5,10 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import com.benjweber.yellowbrick.fragment.FiltersFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -15,6 +17,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.activity_map.*
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
@@ -31,6 +34,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         // Get the SupportMapFragment and get notified when its ready to be used
         val mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFrag.getMapAsync(this)
+
+
+        // Check if filters fragment is currently displayed
+        // Show the back arrow if it is
+        if(supportFragmentManager.findFragmentByTag(FiltersFragment.TAG) != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
+        btnFilters.setOnClickListener {
+            val filtersFragment = FiltersFragment()
+
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragContainer, filtersFragment, FiltersFragment.TAG)
+                .addToBackStack(FiltersFragment.TAG)
+                .commit()
+
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            btnFilters.visibility = View.GONE
+        }
     }
 
     // When the map is ready to use
@@ -110,6 +133,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        btnFilters.visibility = View.VISIBLE
+        return super.onNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        btnFilters.visibility = View.VISIBLE
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        super.onBackPressed()
     }
 
     companion object {
