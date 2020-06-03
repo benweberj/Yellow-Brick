@@ -3,4 +3,8 @@
     <color name="yellow">#FCD858</color>
     <color name="darkyellow">#DDB113</color>
     <color name="navyblue">#242F3E</color>
+
+    <color name="greyPrimary">#ECEFF1</color>
+    <color name="greyLight">#FFFFFF</color>
+    <color name="greyDark">#BABDBE</color>
 </resources>
