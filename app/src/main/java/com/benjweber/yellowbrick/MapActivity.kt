@@ -2,6 +2,7 @@ package com.benjweber.yellowbrick
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,20 +10,27 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.benjweber.yellowbrick.fragment.FiltersFragment
+import com.benjweber.yellowbrick.model.DirectionsApiManager
+import com.beust.klaxon.JsonArray
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Parser
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_map.*
+import org.jetbrains.anko.custom.async
+import org.jetbrains.anko.uiThread
+import java.net.URL
+import com.google.android.gms.maps.model.LatLngBounds //?
+import com.google.android.gms.maps.model.PolylineOptions //?
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-    private lateinit var map: GoogleMap
+    private lateinit var map: GoogleMap //made this public so it is accessible in DirectionsApiManager
     private lateinit var locationManager: YBLocationManager
     private lateinit var crimeManager: CrimeManager
+    private lateinit var myLocation: LatLng
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,17 +68,24 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.dark_map_style))
+//        val latLongB = LatLngBounds.Builder()
+
 
         if (!locationManager.locationGranted()) getLocationPermission()
         if (locationManager.locationGranted()) {
             locationManager.getLastLocation { location ->
-                val myLocation = LatLng(location.latitude, location.longitude)
+                myLocation = LatLng(location.latitude, location.longitude)
                 map.addMarker(MarkerOptions().position(myLocation))
                 map.moveCamera(CameraUpdateFactory.newLatLng(myLocation))
 
                 locationManager.startLocationUpdates()
+
+                //this will probably need to move somewhere else
+                val directionsApiManager = DirectionsApiManager(this)
+                directionsApiManager.getDirectionData(map, myLocation)
             }
         }
+
         crimeManager.fetchCrimes { allCrimes ->
             var crimeLimit = 100
             allCrimes.forEach { crime ->
@@ -92,12 +107,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     map.addMarker(MarkerOptions()
                         .position(crime.pos)
+                        .title(crime.type)
+                        .snippet(crime.date.toString())
                         .icon(BitmapDescriptorFactory.defaultMarker(hue)))
                 }
                 crimeLimit--
             }
+
+            // Set infowindowAdapter, makes window pop up for markers
+            map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
+
             // TODO: find a way to use all incidents, but only show relevant ones
-            Log.i("ybyb", "we got ${allCrimes.size} crimes here")
+           // Log.i("ybyb", "we got ${allCrimes.size} crimes here")
         }
     }
 
