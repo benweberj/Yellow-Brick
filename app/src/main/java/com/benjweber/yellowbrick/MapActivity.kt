@@ -62,6 +62,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             btnFilters.visibility = View.GONE
         }
+
+
     }
 
     // When the map is ready to use

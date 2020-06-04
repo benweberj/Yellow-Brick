@@ -27,27 +27,36 @@ class DirectionsApiManager(context: Context) {
         val myLocation: LatLng = location
         val latLongB = LatLngBounds.Builder()
         val testMarker = map.addMarker(MarkerOptions().position(LatLng(47.4168418, -122.1739783)))
+
+        // Create PolyLine Object and set the color and width
         val options = PolylineOptions()
         options.color(Color.YELLOW)
         options.width(5f)
+
+        //Call url builder to fetch data from google
         val url = getURL(myLocation, testMarker.position)
-        async { //use anko's async to connect to url, download contents, and put into string
+        async { //Connect to the URL and get contents in string result, use Anko async so that we dont do this in UI thread
             val result = URL(url).readText()
-            uiThread { //extract json object from string using klaxon
+            uiThread {
+
+                //Use Klaxon to extract JSON object from String result
                 val parser: Parser = Parser()
                 val stringBuilder: StringBuilder = StringBuilder(result)
                 val json: JsonObject = parser.parse(stringBuilder) as JsonObject
-                val routes = json.array<JsonObject>("routes") //traverse json to get points
-                val points = routes!!["legs"]["steps"][0] as JsonArray<JsonObject>
-                //convert to simple list
+
+                val routes = json.array<JsonObject>("routes")
+                val points = routes!!["legs"]["steps"][0] as JsonArray<JsonObject> //Json array of JsonObjects
+
+                // find polyline object in each element of the array and get the "points" field
                 val polypts = points.flatMap { decodePoly(it.obj("polyline")?.string("points")!!) }
-                // Add  points to polyline and bounds
                 options.add(myLocation)
                 latLongB.include(myLocation)
                 for (point in polypts) {
                     options.add(point)
                     latLongB.include(point)
                 }
+
+                //Add starting points, points in polypts, and destination points
                 options.add(testMarker.position)
                 latLongB.include(testMarker.position)
                 // build bounds
@@ -60,6 +69,7 @@ class DirectionsApiManager(context: Context) {
         }
     }
 
+    //Function to create URL for API calling, takes in starting Lat and end Lat and returns the url with passed in parameters
     private fun getURL(from : LatLng, to : LatLng) : String {
         val origin = "origin=" + from.latitude + "," + from.longitude
         val dest = "destination=" + to.latitude + "," + to.longitude
@@ -68,6 +78,8 @@ class DirectionsApiManager(context: Context) {
         return "https://maps.googleapis.com/maps/api/directions/json?${params}key="
     }
 
+
+    //
     private fun decodePoly(encoded: String): List<LatLng> {
         val poly = ArrayList<LatLng>()
         var index = 0
