@@ -65,7 +65,7 @@ class DirectionsApiManager(context: Context) {
         val dest = "destination=" + to.latitude + "," + to.longitude
         val sensor = "sensor=false"
         val params = "$origin&$dest&$sensor&"
-        return "https://maps.googleapis.com/maps/api/directions/json?${params}key=AIzaSyASM0xB81h5l1QwXWyLxarLjHrG86Z4MOM"
+        return "https://maps.googleapis.com/maps/api/directions/json?${params}key="
     }
 
     private fun decodePoly(encoded: String): List<LatLng> {
