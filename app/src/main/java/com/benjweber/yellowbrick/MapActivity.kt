@@ -92,10 +92,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     map.addMarker(MarkerOptions()
                         .position(crime.pos)
+                        .title(crime.type)
+                        .snippet(crime.date.toString())
                         .icon(BitmapDescriptorFactory.defaultMarker(hue)))
                 }
                 crimeLimit--
             }
+
+            // Set infowindowAdapter, makes window pop up for markers
+            map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
+
             // TODO: find a way to use all incidents, but only show relevant ones
             Log.i("ybyb", "we got ${allCrimes.size} crimes here")
         }
