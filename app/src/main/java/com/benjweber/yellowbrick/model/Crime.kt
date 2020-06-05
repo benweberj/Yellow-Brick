@@ -6,5 +6,6 @@ import java.util.*
 data class Crime (
     val pos: LatLng,
     val type: String,
+    val typeSpecific: String,
     val date: Date
 )
