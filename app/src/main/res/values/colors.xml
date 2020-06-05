@@ -6,9 +6,9 @@
     <color name="white">#FFFFFF</color>
 
 
-<!--    <color name="greyPrimary">#ECEFF1</color>-->
-<!--    <color name="greyLight">#FFFFFF</color>-->
-<!--    <color name="greyDark">#BABDBE</color>-->
+    <color name="greyPrimary">#ECEFF1</color>
+    <color name="greyLight">#FFFFFF</color>
+    <color name="greyDark">#BABDBE</color>
 
     <!-- Crime colors -->
     <color name="dark_red">#BD1E1E</color>
