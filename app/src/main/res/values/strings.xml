@@ -3,4 +3,12 @@
     <string name="title_activity_map">Map</string>
     <string name="filtersButton">Filters</string>
     <string name="filtersTitle">Filters</string>
+
+    <string-array name="times">
+        <item>Past day</item>
+        <item>Past week</item>
+        <item>Past month</item>
+        <item>Past year</item>
+        <item>All times</item>
+    </string-array>
 </resources>
