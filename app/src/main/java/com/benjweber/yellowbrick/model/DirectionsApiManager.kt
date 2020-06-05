@@ -1,40 +1,36 @@
 package com.benjweber.yellowbrick.model
 
-import android.app.Application
-import android.content.Context
 import android.graphics.Color
-import com.benjweber.yellowbrick.MapActivity
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.uiThread
 import java.net.URL
 
 
 // help from //https://github.com/irenenaya/Kotlin-Practice/blob/master/MapsRouteActivity.kt
-class DirectionsApiManager(context: Context) {
+class DirectionsApiManager(context: PlaceSelectionListener) {
     private lateinit var takeMap: GoogleMap
+    private val options = PolylineOptions()
     ///test code may not implement
-    fun getDirectionData(map: GoogleMap, location: LatLng) {
+    fun getDirectionData(map: GoogleMap, location: LatLng, destination: LatLng, tracker: Int) {
         takeMap = map
         val myLocation: LatLng = location
         val latLongB = LatLngBounds.Builder()
-        val testMarker = map.addMarker(MarkerOptions().position(LatLng(47.4168418, -122.1739783)))
-
         // Create PolyLine Object and set the color and width
-        val options = PolylineOptions()
+        //val options = PolylineOptions()
         options.color(Color.YELLOW)
         options.width(5f)
-
+//        if (tracker != 1) {
+//            newPolyLine.remove()
+//        }
         //Call url builder to fetch data from google
-        val url = getURL(myLocation, testMarker.position)
+        val url = getURL(myLocation, destination)
         async { //Connect to the URL and get contents in string result, use Anko async so that we dont do this in UI thread
             val result = URL(url).readText()
             uiThread {
@@ -57,8 +53,8 @@ class DirectionsApiManager(context: Context) {
                 }
 
                 //Add starting points, points in polypts, and destination points
-                options.add(testMarker.position)
-                latLongB.include(testMarker.position)
+                options.add(destination)
+                latLongB.include(destination)
                 // build bounds
                 val bounds = latLongB.build()
                 // add polyline to the map
@@ -74,8 +70,8 @@ class DirectionsApiManager(context: Context) {
         val origin = "origin=" + from.latitude + "," + from.longitude
         val dest = "destination=" + to.latitude + "," + to.longitude
         val sensor = "sensor=false"
-        val params = "$origin&$dest&$sensor&"
-        return "https://maps.googleapis.com/maps/api/directions/json?${params}key="
+        val params = "$origin&$dest&$sensor"
+        return "https://maps.googleapis.com/maps/api/directions/json?${params}&key=AIzaSyBcBs9zaSemryx-xXW0p-KtYHlffpAEDPQ"
     }
 
 
