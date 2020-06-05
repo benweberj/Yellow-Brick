@@ -9,7 +9,7 @@
     >
 
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvFiltersTitle"
         android:text="@string/filtersTitle"
         android:textSize="30sp"
         android:layout_width="wrap_content"
@@ -17,6 +17,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Spinner
+        android:id="@+id/spinnerTimeFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFiltersTitle"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

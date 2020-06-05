@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,6 +24,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_map.*
+import org.jetbrains.anko.custom.async
+import org.jetbrains.anko.uiThread
+import java.net.URL
+import com.google.android.gms.maps.model.LatLngBounds //?
+import com.google.android.gms.maps.model.PolylineOptions //?
+import java.text.SimpleDateFormat
+import java.util.*
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
@@ -30,7 +39,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemSelectedListener {
     private lateinit var map: GoogleMap //made this public so it is accessible in DirectionsApiManager
     private lateinit var locationManager: YBLocationManager
     private lateinit var crimeManager: CrimeManager
@@ -39,6 +48,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     var tracker = 0
     private lateinit var polylineFinal : Polyline
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
+
+    // Filter's default date is one day ago relative to newest crime
+    private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
+    private var filterDate = dateFormatter.parse("5/13/2013 0:00")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,46 +111,34 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         var crimeLimit = 1000
         crimeManager.getCrimes().forEach { crime ->
             if (crimeLimit > 0) {
-//                val hue = when (crime.type) {
-//                    "CAR PROWL" -> BitmapDescriptorFactory.HUE_BLUE
-//                    "OTHER PROPERTY" -> BitmapDescriptorFactory.HUE_ORANGE
-//                    "BURGLARY" -> BitmapDescriptorFactory.HUE_VIOLET
-//                    "PROPERTY DAMAGE" -> BitmapDescriptorFactory.HUE_YELLOW
-//                    "VEHICLE THEFT" -> BitmapDescriptorFactory.HUE_CYAN
-//                    "ASSAULT" -> BitmapDescriptorFactory.HUE_AZURE
-//                    "WARRANT ARREST" -> BitmapDescriptorFactory.HUE_GREEN
-//                    "FRAUD" -> BitmapDescriptorFactory.HUE_ROSE
-//                    "THREATS" -> BitmapDescriptorFactory.HUE_MAGENTA
-//                    else -> {
-//                        BitmapDescriptorFactory.HUE_RED
-//                    }
-//                }
-                val color = when (crime.type) {
-                    "HOMICIDE"        -> R.color.dark_red
-                    "ASSAULT"         -> R.color.orange_red
-                    "THREATS"         -> R.color.orange
-                    "PURSE SNATCH"    -> R.color.pink
-                    "CAR PROWL"       -> R.color.purple
-                    "VEHICLE THEFT"   -> R.color.light_green
-                    "BURGLARY"        -> R.color.blue
-                    "ROBBERY"         -> R.color.dark_blue
-                    "PICKPOCKET"      -> R.color.tan
-                    else -> {
-                        R.color.white // white
+                if(crime.date > filterDate) {
+                    val color = when (crime.type) {
+                        "HOMICIDE" -> R.color.dark_red
+                        "ASSAULT" -> R.color.orange_red
+                        "THREATS" -> R.color.orange
+                        "PURSE SNATCH" -> R.color.pink
+                        "CAR PROWL" -> R.color.purple
+                        "VEHICLE THEFT" -> R.color.light_green
+                        "BURGLARY" -> R.color.blue
+                        "ROBBERY" -> R.color.dark_blue
+                        "PICKPOCKET" -> R.color.tan
+                        else -> {
+                            R.color.white // white
+                        }
                     }
-                }
-                Log.i("bjw", "color: ${color}")
+                    Log.i("bjw", "color: ${color}")
 
-                map.addMarker(
-                    MarkerOptions()
-                        .position(crime.pos)
-                        .title(crime.type)
-                        .snippet("${crime.date.toString()}...${crime.typeSpecific}")
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(crime.pos)
+                            .title(crime.type)
+                            .snippet("${crime.date.toString()}...${crime.typeSpecific}")
 //                        .icon(BitmapDescriptorFactory.defaultMarker(hue))
-                        .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(color)))
-                )
+                            .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(color)))
+                    )
+                    crimeLimit--
+                }
             }
-            crimeLimit--
         }
 
             // Set infowindowAdapter, makes window pop up for markers
@@ -240,5 +241,27 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         private const val LOCATION_PERMISSION_CODE = 254 // Random #
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val itemContent = parent?.getItemAtPosition(position).toString()
+        if (parent?.id == R.id.spinnerTimeFilter) {
+            val newDate = when (itemContent) {
+                "Past day" -> dateFormatter.parse("5/13/2013 0:00")
+                "Past week" -> dateFormatter.parse("5/06/2013 0:00")
+                "Past month" -> dateFormatter.parse("6/13/2013 0:00")
+                "Past year" -> dateFormatter.parse("5/13/2012 0:00")
+                "All times" -> dateFormatter.parse("12/31/2010 0:00")
+                else -> dateFormatter.parse("5/13/2013 0:00")
+            }
+
+            if (newDate != filterDate) {
+                filterDate = newDate
+                onMapReady(map)
+            }
+        }
     }
 }
