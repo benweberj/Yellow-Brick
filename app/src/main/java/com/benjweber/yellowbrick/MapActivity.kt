@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.LatLngBounds //?
 import com.google.android.gms.maps.model.PolylineOptions //?
 import java.text.SimpleDateFormat
 import java.util.*
-import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -260,6 +260,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
             if (newDate != filterDate) {
                 filterDate = newDate
+                map.clear()
                 onMapReady(map)
             }
         }
