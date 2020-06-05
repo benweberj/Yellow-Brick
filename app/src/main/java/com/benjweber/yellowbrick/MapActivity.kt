@@ -2,13 +2,17 @@ package com.benjweber.yellowbrick
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.benjweber.yellowbrick.fragment.FiltersFragment
 import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.beust.klaxon.JsonArray
@@ -81,45 +85,71 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 locationManager.startLocationUpdates()
 
                 //this will probably need to move somewhere else
-                val directionsApiManager = DirectionsApiManager(this)
-                directionsApiManager.getDirectionData(map, myLocation)
+//                val directionsApiManager = DirectionsApiManager(this)
+//                directionsApiManager.getDirectionData(map, myLocation)
             }
         }
 
-        crimeManager.fetchCrimes { allCrimes ->
-            var crimeLimit = 100
-            allCrimes.forEach { crime ->
-                if (crimeLimit > 0) {
-                    val hue = when (crime.type) {
-                        "CAR PROWL" -> BitmapDescriptorFactory.HUE_BLUE
-                        "OTHER PROPERTY" -> BitmapDescriptorFactory.HUE_ORANGE
-                        "BURGLARY" -> BitmapDescriptorFactory.HUE_VIOLET
-                        "PROPERTY DAMAGE" -> BitmapDescriptorFactory.HUE_YELLOW
-                        "VEHICLE THEFT" -> BitmapDescriptorFactory.HUE_CYAN
-                        "ASSAULT" -> BitmapDescriptorFactory.HUE_AZURE
-                        "WARRANT ARREST" -> BitmapDescriptorFactory.HUE_GREEN
-                        "FRAUD" -> BitmapDescriptorFactory.HUE_ROSE
-                        "THREATS" -> BitmapDescriptorFactory.HUE_MAGENTA
-                        else -> {
-                            BitmapDescriptorFactory.HUE_RED
-                        }
+        var crimeLimit = 1000
+        crimeManager.getCrimes().forEach { crime ->
+            if (crimeLimit > 0) {
+//                val hue = when (crime.type) {
+//                    "CAR PROWL" -> BitmapDescriptorFactory.HUE_BLUE
+//                    "OTHER PROPERTY" -> BitmapDescriptorFactory.HUE_ORANGE
+//                    "BURGLARY" -> BitmapDescriptorFactory.HUE_VIOLET
+//                    "PROPERTY DAMAGE" -> BitmapDescriptorFactory.HUE_YELLOW
+//                    "VEHICLE THEFT" -> BitmapDescriptorFactory.HUE_CYAN
+//                    "ASSAULT" -> BitmapDescriptorFactory.HUE_AZURE
+//                    "WARRANT ARREST" -> BitmapDescriptorFactory.HUE_GREEN
+//                    "FRAUD" -> BitmapDescriptorFactory.HUE_ROSE
+//                    "THREATS" -> BitmapDescriptorFactory.HUE_MAGENTA
+//                    else -> {
+//                        BitmapDescriptorFactory.HUE_RED
+//                    }
+//                }
+                val color = when (crime.type) {
+                    "HOMICIDE"        -> R.color.dark_red
+                    "ASSAULT"         -> R.color.orange_red
+                    "THREATS"         -> R.color.orange
+                    "PURSE SNATCH"    -> R.color.pink
+                    "CAR PROWL"       -> R.color.purple
+                    "VEHICLE THEFT"   -> R.color.light_green
+                    "BURGLARY"        -> R.color.blue
+                    "ROBBERY"         -> R.color.dark_blue
+                    "PICKPOCKET"      -> R.color.tan
+                    else -> {
+                        R.color.white // white
                     }
+                }
+                Log.i("bjw", "color: ${color}")
 
-                    map.addMarker(MarkerOptions()
+                map.addMarker(
+                    MarkerOptions()
                         .position(crime.pos)
                         .title(crime.type)
-                        .snippet(crime.date.toString())
-                        .icon(BitmapDescriptorFactory.defaultMarker(hue)))
-                }
-                crimeLimit--
+                        .snippet("${crime.date.toString()}...${crime.typeSpecific}")
+//                        .icon(BitmapDescriptorFactory.defaultMarker(hue))
+                        .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(color)))
+                )
             }
-
-            // Set infowindowAdapter, makes window pop up for markers
-            map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
-
-            // TODO: find a way to use all incidents, but only show relevant ones
-           // Log.i("ybyb", "we got ${allCrimes.size} crimes here")
+            crimeLimit--
         }
+
+        // Set infowindowAdapter, makes window pop up for markers
+        map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
+    }
+
+    // Convert drawable into BitmapDescriptor to be used for markers
+    private fun bitmapDescriptorFromDrawable(drawableId: Int, color: String): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(this, drawableId)
+
+        drawable!!.setTint(Color.parseColor(color))
+
+        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
+        val bm = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bm)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bm)
     }
 
     // Explains why we need location, then asks them for permission
@@ -135,7 +165,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     LOCATION_PERMISSION_CODE
                 )
             }
-            .setNegativeButton("Piss off") { _, _ -> }
+            .setNegativeButton("No thanks dude") { _, _ -> }
             .create()
             .show()
     }
