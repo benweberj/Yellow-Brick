@@ -24,6 +24,10 @@ class CrimeManager(private val context: Context) {
         q.add(req)
     }
 
+    fun getCrimes(): List<Crime> {
+        return this.crimes
+    }
+
     private fun convertToCrimes(csv: String, onCrimesReady: (List<Crime>) -> Unit) {
         val policeScanner = Scanner(csv)
 
@@ -34,14 +38,17 @@ class CrimeManager(private val context: Context) {
             val rawCrime = policeScanner.nextLine().split(",")
             val pos = LatLng(rawCrime[15].toDouble(), rawCrime[14].toDouble())
             val type = rawCrime[6]
+            val typeSpecific = rawCrime[4]
             val dateString = rawCrime[8]
+
 
             val formatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
             val date = formatter.parse(dateString)
             date?.let {
-                crimes.add(Crime(pos, type, it))
+                crimes.add(Crime(pos, type, typeSpecific, it))
             }
         }
+        crimes = crimes.sortedByDescending { it.date } as MutableList<Crime>
         onCrimesReady(crimes)
     }
 }
