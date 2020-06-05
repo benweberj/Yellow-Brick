@@ -32,17 +32,32 @@ class FiltersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         context?.let {
-            val adapter =
-                ArrayAdapter.createFromResource(
+
+            //Set up time range spinner
+
+            val timesAdapter = ArrayAdapter.createFromResource (
                 it,
                 R.array.times,
                 R.layout.simple_spinner_item
             )
 
-            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-            spinnerTimeFilter.adapter = adapter
+            timesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+            spinnerTimeFilter.adapter = timesAdapter
 
             spinnerTimeFilter.onItemSelectedListener = context as MapActivity
+
+            // Set up crime type spinner
+
+            val typesAdapter = ArrayAdapter.createFromResource (
+                it,
+                R.array.crimeTypes,
+                R.layout.simple_spinner_item
+            )
+
+            typesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+            spinnerTypeFilter.adapter = typesAdapter
+
+            spinnerTypeFilter.onItemSelectedListener = context as MapActivity
         }
     }
 }
