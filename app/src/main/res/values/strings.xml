@@ -6,6 +6,7 @@
 
     <string name="splash_greeting">Welcome to YellowBrick.</string>
     <string name="splash_msg">Give us a second while we get crime info for your area.</string>
+    <string name="timeFilterDesc">Show me crimes from . . .</string>
 
     <string-array name="times">
         <item>Past day</item>
