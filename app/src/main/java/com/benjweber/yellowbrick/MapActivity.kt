@@ -252,7 +252,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             val newDate = when (itemContent) {
                 "Past day" -> dateFormatter.parse("5/13/2013 0:00")
                 "Past week" -> dateFormatter.parse("5/06/2013 0:00")
-                "Past month" -> dateFormatter.parse("6/13/2013 0:00")
+                "Past month" -> dateFormatter.parse("4/13/2013 0:00")
                 "Past year" -> dateFormatter.parse("5/13/2012 0:00")
                 "All times" -> dateFormatter.parse("12/31/2010 0:00")
                 else -> dateFormatter.parse("5/13/2013 0:00")
