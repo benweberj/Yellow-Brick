@@ -19,15 +19,15 @@
 
     <string-array name="crimeTypes">
         <item>All types of crime</item>
-        <item>"Homicide"</item>
-        <item>"Assault" </item>
-        <item>"Threats"</item>
-        <item>"Purse snatching"</item>
-        <item>"Car prowling"</item>
-        <item>"Vehicle theft"</item>
-        <item>"Burglary"</item>
-        <item>"Robbery"</item>
-        <item>"Pickpocketing"</item>
+        <item>Homicide</item>
+        <item>Assault</item>
+        <item>Threats</item>
+        <item>Purse snatching</item>
+        <item>Car prowling</item>
+        <item>Vehicle theft</item>
+        <item>Burglary</item>
+        <item>Robbery</item>
+        <item>Pickpocketing</item>
     </string-array>
 
 </resources>

@@ -53,6 +53,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
     private var filterDate = dateFormatter.parse("5/13/2013 0:00")
 
+    private var filterCrimeTypes = "All crimes"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
@@ -111,7 +113,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         var crimeLimit = 1000
         crimeManager.getCrimes().forEach { crime ->
             if (crimeLimit > 0) {
-                if(crime.date > filterDate) {
+                if(crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
                     val color = when (crime.type) {
                         "HOMICIDE" -> R.color.dark_red
                         "ASSAULT" -> R.color.orange_red
@@ -260,6 +262,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
             if (newDate != filterDate) {
                 filterDate = newDate
+                map.clear()
+                onMapReady(map)
+            }
+        } else if (parent?.id == R.id.spinnerTypeFilter) {
+            val newCrimeType = when (itemContent) {
+                "All types of crime" -> "All crimes"
+                "Homicide" -> "HOMICIDE"
+                "Assault" -> "ASSAULT"
+                "Threats" -> "THREATS"
+                "Purse snatching" -> "PURSE SNATCH"
+                "Car prowling" -> "CAR PROWL"
+                "Vehicle theft" -> "VEHICLE THEFT"
+                "Burglary" -> "BURGLARY"
+                "Robbery" -> "ROBBERY"
+                "Pickpocketing" -> "PICKPOCKET"
+                else -> "All crimes"
+            }
+
+            if (newCrimeType != filterCrimeTypes) {
+                filterCrimeTypes = newCrimeType
                 map.clear()
                 onMapReady(map)
             }
