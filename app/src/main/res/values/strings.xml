@@ -8,7 +8,7 @@
     <string name="splash_msg">Give us a second while we get crime info for your area.</string>
     <string name="timeFilterDesc">Show me crimes from . . .</string>
     <string name="crimeTypeSpinnerDesc">Show me occurrences of . . .</string>
-    <string name="filtersDesc">(Since we are using test data, the current date is 5/14/2013)</string>
+    <string name="filtersDesc">(Current Date: 5/14/2013)</string>
 
     <string-array name="times">
         <item>Past day</item>
