@@ -2,6 +2,7 @@ package com.benjweber.yellowbrick.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,22 @@ class FiltersFragment : Fragment() {
 
     companion object {
         val TAG: String = FiltersFragment::class.java.simpleName
+        const val OUT_TIMES_SELECTION = "OUT_TIMES_SELECTION"
+        const val OUT_TYPES_SELECTION = "OUT_TYPES_SELECTION"
+    }
+
+    private var timesSelection = 0
+    private var typesSelection = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            Log.i("TEST", "Was saved")
+            with (savedInstanceState) {
+                timesSelection = getInt(OUT_TIMES_SELECTION)
+                typesSelection = getInt(OUT_TYPES_SELECTION)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -45,6 +62,7 @@ class FiltersFragment : Fragment() {
             spinnerTimeFilter.adapter = timesAdapter
 
             spinnerTimeFilter.onItemSelectedListener = context as MapActivity
+            spinnerTimeFilter.setSelection(timesSelection)
 
             // Set up crime type spinner
 
@@ -58,6 +76,13 @@ class FiltersFragment : Fragment() {
             spinnerTypeFilter.adapter = typesAdapter
 
             spinnerTypeFilter.onItemSelectedListener = context as MapActivity
+            spinnerTypeFilter.setSelection(typesSelection)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(OUT_TIMES_SELECTION, spinnerTimeFilter.selectedItemPosition)
+        outState.putInt(OUT_TYPES_SELECTION, spinnerTypeFilter.selectedItemPosition)
+        super.onSaveInstanceState(outState)
     }
 }
