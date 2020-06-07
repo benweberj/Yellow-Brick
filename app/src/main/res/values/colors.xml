@@ -5,19 +5,14 @@
     <color name="navy_blue">#242F3E</color>
     <color name="white">#FFFFFF</color>
 
-
-<!--    <color name="greyPrimary">#ECEFF1</color>-->
-<!--    <color name="greyLight">#FFFFFF</color>-->
-<!--    <color name="greyDark">#BABDBE</color>-->
-
     <!-- Crime colors -->
     <color name="dark_red">#BD1E1E</color>
     <color name="orange_red">#F95738</color>
     <color name="orange">#EE964B</color>
     <color name="pink">#FE8CF8</color>
     <color name="purple">#AE76A6</color>
-    <color name="light_green">#8EB19D</color>
-    <color name="blue">#337CA0</color>
-    <color name="dark_blue">#0D3B66</color>
+    <color name="light_green">#78D6A0</color>
+    <color name="blue">#2D97CC</color>
+    <color name="dark_blue">#095CAA</color>
     <color name="tan">#DACC94</color>
 </resources>
