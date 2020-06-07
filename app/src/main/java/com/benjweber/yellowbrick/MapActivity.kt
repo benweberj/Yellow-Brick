@@ -111,25 +111,33 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             }
         }
 
-        val crimeLimit = 1000
+        var crimeLimit = 1000
         crimeManager.getCrimes().forEach { crime ->
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
             if (crimeLimit > 0) {
-                map.addMarker(
-                    MarkerOptions()
-                        .position(crime.pos)
-                        .title(crime.type)
+                if(crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(crime.pos)
+                            .title(crime.type)
 
-                        .snippet(snippet)
-                        .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(crime.color)))
-                )
+                            .snippet(snippet)
+                            .icon(
+                                bitmapDescriptorFromDrawable(
+                                    R.drawable.dot,
+                                    getString(crime.color)
+                                )
+                            )
+                    )
+                    crimeLimit--
+                }
             }
         }
 
             // Set infowindowAdapter, makes window pop up for markers
             map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
             //initalize sdk
-            Places.initialize(applicationContext, "AIzaSyBcBs9zaSemryx-xXW0p-KtYHlffpAEDPQ")
+            Places.initialize(applicationContext, "key")
             // Create a new Places client instance
             val placesClient: PlacesClient = Places.createClient(this)
 
