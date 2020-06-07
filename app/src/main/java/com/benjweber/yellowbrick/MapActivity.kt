@@ -99,7 +99,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             locationManager.getLastLocation { location ->
                 myLocation = LatLng(location.latitude, location.longitude)
                 map.addMarker(MarkerOptions().position(myLocation))
-                map.moveCamera(CameraUpdateFactory.newLatLng(myLocation))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13.0f))
+
 
                 locationManager.startLocationUpdates()
 
@@ -110,36 +111,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             }
         }
 
-        var crimeLimit = 1000
+        val crimeLimit = 1000
         crimeManager.getCrimes().forEach { crime ->
+            val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
             if (crimeLimit > 0) {
-                if(crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
-                    val color = when (crime.type) {
-                        "HOMICIDE" -> R.color.dark_red
-                        "ASSAULT" -> R.color.orange_red
-                        "THREATS" -> R.color.orange
-                        "PURSE SNATCH" -> R.color.pink
-                        "CAR PROWL" -> R.color.purple
-                        "VEHICLE THEFT" -> R.color.light_green
-                        "BURGLARY" -> R.color.blue
-                        "ROBBERY" -> R.color.dark_blue
-                        "PICKPOCKET" -> R.color.tan
-                        else -> {
-                            R.color.white // white
-                        }
-                    }
-                    Log.i("bjw", "color: ${color}")
+                map.addMarker(
+                    MarkerOptions()
+                        .position(crime.pos)
+                        .title(crime.type)
 
-                    map.addMarker(
-                        MarkerOptions()
-                            .position(crime.pos)
-                            .title(crime.type)
-                            .snippet("${crime.date.toString()}...${crime.typeSpecific}")
-//                        .icon(BitmapDescriptorFactory.defaultMarker(hue))
-                            .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(color)))
-                    )
-                    crimeLimit--
-                }
+                        .snippet(snippet)
+                        .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(crime.color)))
+                )
             }
         }
 
