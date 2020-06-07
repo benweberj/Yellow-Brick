@@ -21,6 +21,17 @@
         />
 
     <TextView
+        android:id="@+id/tvFiltersDesc"
+        android:text="@string/filtersDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvFiltersTitle"
+        />
+
+
+    <TextView
         android:id="@+id/tvTimeFilter"
         android:padding="10dp"
         android:layout_width="wrap_content"
@@ -28,7 +39,7 @@
         android:text="@string/timeFilterDesc"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/spinnerTimeFilter"
-        app:layout_constraintTop_toBottomOf="@id/tvFiltersTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvFiltersDesc" />
 
     <Spinner
         android:id="@+id/spinnerTimeFilter"
@@ -36,7 +47,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/tvTimeFilter"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvFiltersTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvFiltersDesc"
         />
 
     <androidx.constraintlayout.widget.Guideline
@@ -44,7 +55,7 @@
         android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.12" />
+        app:layout_constraintGuide_percent="0.15" />
 
     <TextView
         android:id="@+id/tvTypeFilter"
@@ -63,7 +74,6 @@
         android:gravity="center_vertical"
         app:layout_constraintLeft_toRightOf="@id/tvTypeFilter"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guidelineFilters"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/guidelineFilters" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
