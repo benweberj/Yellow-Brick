@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.benjweber.yellowbrick.fragment.FiltersFragment
 import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.google.android.gms.common.api.Status
@@ -49,11 +50,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     private lateinit var polylineFinal : Polyline
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
 
+    lateinit var filtersFragment: FiltersFragment
+
     // Filter's default date is one day ago relative to newest crime
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
     private var filterDate = dateFormatter.parse("5/13/2013 0:00")
 
     private var filterCrimeTypes = "All crimes"
+
+    private var timesSpinnerPos = 0
+    private var typesSpinnerPos = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +80,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         }
 
         btnFilters.setOnClickListener {
-            val filtersFragment = FiltersFragment()
+            if (supportFragmentManager.findFragmentByTag(FiltersFragment.TAG) == null) {
+                filtersFragment = FiltersFragment()
+            } else {
+                val frag = supportFragmentManager.findFragmentByTag(FiltersFragment.TAG) as? FiltersFragment
+                frag?.let {
+                    filtersFragment = it
+                }
+            }
+
+            val bundle = Bundle()
+            bundle.putInt(FiltersFragment.OUT_TIMES_SELECTION, timesSpinnerPos)
+            bundle.putInt(FiltersFragment.OUT_TYPES_SELECTION, typesSpinnerPos)
+
+            filtersFragment.arguments = bundle
 
             supportFragmentManager
                 .beginTransaction()
@@ -165,7 +184,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 }
 
             })
-            // TODO: find a way to use all incidents, but only show relevant ones
            // Log.i("ybyb", "we got ${allCrimes.size} crimes here")
 
         // Set infowindowAdapter, makes window pop up for markers
@@ -239,6 +257,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     override fun onNothingSelected(parent: AdapterView<*>?) {
     }
 
+    // When spinner items are selected, filters the map points
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val itemContent = parent?.getItemAtPosition(position).toString()
         if (parent?.id == R.id.spinnerTimeFilter) {
@@ -256,6 +275,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 map.clear()
                 onMapReady(map)
             }
+
+            timesSpinnerPos = position
+
         } else if (parent?.id == R.id.spinnerTypeFilter) {
             val newCrimeType = when (itemContent) {
                 "All types of crime" -> "All crimes"
@@ -276,6 +298,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 map.clear()
                 onMapReady(map)
             }
+
+            typesSpinnerPos = position
         }
     }
 }

@@ -28,11 +28,22 @@ class FiltersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
-            Log.i("TEST", "Was saved")
             with (savedInstanceState) {
                 timesSelection = getInt(OUT_TIMES_SELECTION)
                 typesSelection = getInt(OUT_TYPES_SELECTION)
             }
+        } else {
+            val timesSelectionArgument = arguments?.getInt(OUT_TIMES_SELECTION)
+            val typesSelectionArgument = arguments?.getInt(OUT_TYPES_SELECTION)
+
+            timesSelectionArgument?.let {
+                timesSelection = it
+            }
+
+            typesSelectionArgument?.let {
+                typesSelection = it
+            }
+
         }
     }
 
