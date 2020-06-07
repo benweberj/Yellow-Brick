@@ -117,7 +117,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         if (locationManager.locationGranted()) {
             locationManager.getLastLocation { location ->
                 myLocation = LatLng(location.latitude, location.longitude)
-                map.addMarker(MarkerOptions().position(myLocation))
+                map.addMarker(MarkerOptions().position(myLocation).title("currLocation"))
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13.0f))
 
 

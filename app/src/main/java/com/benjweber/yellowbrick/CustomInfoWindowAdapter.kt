@@ -43,6 +43,9 @@ class CustomInfoWindowAdapter(private val context: Context) : GoogleMap.InfoWind
     }
     override fun getInfoContents(p0: Marker?): View? {
         if (p0 != null) {
+            if (p0.title == "currLocation") {
+                return View.inflate(context, R.layout.custom_info_window, null)
+            }
             renderWindowText(p0, mWindow)
         }
         return mWindow
@@ -50,6 +53,9 @@ class CustomInfoWindowAdapter(private val context: Context) : GoogleMap.InfoWind
 
     override fun getInfoWindow(p0: Marker?): View? {
         if (p0 != null) {
+            if (p0.title == "currLocation") {
+                return View.inflate(context, R.layout.custom_info_window, null)
+            }
             renderWindowText(p0, mWindow)
         }
         return mWindow
