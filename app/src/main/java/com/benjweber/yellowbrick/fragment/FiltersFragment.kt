@@ -1,5 +1,6 @@
 package com.benjweber.yellowbrick.fragment
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.benjweber.yellowbrick.MapActivity
 import com.benjweber.yellowbrick.R
+import com.benjweber.yellowbrick.YBApp
+import com.google.android.gms.dynamic.SupportFragmentWrapper
+import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.fragment_filters.*
 
 class FiltersFragment : Fragment() {
@@ -58,7 +62,7 @@ class FiltersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        btnToFiltered.setOnClickListener { fragmentManager?.popBackStack() }
         context?.let {
 
             //Set up time range spinner

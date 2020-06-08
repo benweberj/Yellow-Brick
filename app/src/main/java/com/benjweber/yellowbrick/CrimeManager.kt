@@ -10,10 +10,12 @@ import com.benjweber.yellowbrick.model.Crime
 import com.google.android.gms.maps.model.LatLng
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.random.Random
 
 class CrimeManager(private val context: Context) {
     private val q = Volley.newRequestQueue(context)
     private var crimes = mutableListOf<Crime>()
+    private val CRIME_LIMIT = 1000
 
     fun fetchCrimes(onCrimesReady: (List<Crime>) -> Unit) {
         val crimesEndpoint = "https://raw.githubusercontent.com/lindsayrgwatt/neighborhood/master/neighborhood/data/historical/Seattle_Police_Department_Police_Report_Incident.csv"
@@ -35,18 +37,19 @@ class CrimeManager(private val context: Context) {
         // Remove the headers
         policeScanner.nextLine()
 
-        while (policeScanner.hasNextLine()) {
-            val rawCrime = policeScanner.nextLine().split(",")
-            val pos = LatLng(rawCrime[15].toDouble(), rawCrime[14].toDouble())
-            val type = rawCrime[6]
-            val typeSpecific = rawCrime[4]
-            val color = colorOf(type)
-            val formatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
-            val date = formatter.parse(rawCrime[8])
-
-            crimes.add(Crime(pos, type, typeSpecific, color, date as Date))
+        for (i in 0..CRIME_LIMIT) {
+            if (policeScanner.hasNextLine()) {
+                val rawCrime = policeScanner.nextLine().split(",")
+                val pos = LatLng(rawCrime[15].toDouble(), rawCrime[14].toDouble())
+                val type = rawCrime[6]
+                val typeSpecific = rawCrime[4]
+                val color = colorOf(type)
+                val formatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
+                val date = formatter.parse(rawCrime[8])
+                crimes.add(Crime(pos, type, typeSpecific, color, date as Date))
+            }
         }
-        crimes = crimes.sortedByDescending { it.date } as MutableList<Crime>
+
         onCrimesReady(crimes)
     }
 

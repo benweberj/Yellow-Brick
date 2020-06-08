@@ -2,7 +2,7 @@
     <string name="app_name">Yellow Brick</string>
     <string name="title_activity_map">Map</string>
     <string name="filtersButton">Filters</string>
-    <string name="filtersTitle">Filters</string>
+    <string name="filtersTitle">Crime Filters</string>
 
     <string name="splash_greeting">Welcome to YellowBrick.</string>
     <string name="splash_msg">Give us a second while we get crime info for your area.</string>
