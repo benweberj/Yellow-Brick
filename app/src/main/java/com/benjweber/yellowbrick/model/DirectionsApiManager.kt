@@ -18,7 +18,7 @@ class DirectionsApiManager(context: PlaceSelectionListener) {
     private lateinit var takeMap: GoogleMap
     private val options = PolylineOptions()
     ///test code may not implement
-    fun getDirectionData(map: GoogleMap, location: LatLng, destination: LatLng, tracker: Int) {
+    fun getDirectionData(map: GoogleMap, location: LatLng, destination: LatLng, removeLines: MutableList<Polyline>) {
         takeMap = map
         val myLocation: LatLng = location
         val latLongB = LatLngBounds.Builder()
@@ -26,9 +26,6 @@ class DirectionsApiManager(context: PlaceSelectionListener) {
         //val options = PolylineOptions()
         options.color(Color.YELLOW)
         options.width(5f)
-//        if (tracker != 1) {
-//            newPolyLine.remove()
-//        }
         //Call url builder to fetch data from google
         val url = getURL(myLocation, destination)
         async { //Connect to the URL and get contents in string result, use Anko async so that we dont do this in UI thread
@@ -58,7 +55,7 @@ class DirectionsApiManager(context: PlaceSelectionListener) {
                 // build bounds
                 val bounds = latLongB.build()
                 // add polyline to the map
-                map!!.addPolyline(options)
+                removeLines.add(map!!.addPolyline(options))
                 // show map with route centered
                 map!!.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
             }
@@ -71,7 +68,8 @@ class DirectionsApiManager(context: PlaceSelectionListener) {
         val dest = "destination=" + to.latitude + "," + to.longitude
         val sensor = "sensor=false"
         val params = "$origin&$dest&$sensor"
-        return "https://maps.googleapis.com/maps/api/directions/json?${params}&key=AIzaSyBcBs9zaSemryx-xXW0p-KtYHlffpAEDPQ"
+        val key = ""
+        return "https://maps.googleapis.com/maps/api/directions/json?${params}&key=${key}"
     }
 
 

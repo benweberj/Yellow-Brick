@@ -47,6 +47,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     private lateinit var crimeManager: CrimeManager
     private lateinit var myLocation: LatLng
     private lateinit var userSelectedLatLong: LatLng
+    private val removeLines = mutableListOf<Polyline>()
     var tracker = 0
     private lateinit var polylineFinal : Polyline
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
@@ -95,6 +96,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 }
             }
 
+            supportFragmentManager.addOnBackStackChangedListener {
+                supportActionBar?.setDisplayHomeAsUpEnabled(
+                    supportFragmentManager.backStackEntryCount > 0
+                )
+            }
+
             val bundle = Bundle()
             bundle.putInt(FiltersFragment.OUT_TIMES_SELECTION, timesSpinnerPos)
             bundle.putInt(FiltersFragment.OUT_TYPES_SELECTION, typesSpinnerPos)
@@ -108,7 +115,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 .commit()
 
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            btnFilters.visibility = View.GONE
+//            btnFilters.visibility = View.GONE
         }
     }
 
@@ -136,64 +143,60 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             }
         }
 
-        var crimeLimit = 1000
-        crimeManager.getCrimes().forEach { crime ->
+        crimeManager.getCrimes(filterCrimeTypes, filterDate).forEach { crime ->
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
-            if (crimeLimit > 0) {
-                if(crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
-                    map.addMarker(
-                        MarkerOptions()
-                            .position(crime.pos)
-                            .title(crime.type)
-
-                            .snippet(snippet)
-                            .icon(
-                                bitmapDescriptorFromDrawable(
-                                    R.drawable.dot,
-                                    getString(crime.color)
-                                )
+            if (crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
+                map.addMarker(
+                    MarkerOptions()
+                        .position(crime.pos)
+                        .title(crime.type)
+                        .snippet(snippet)
+                        .icon(
+                            bitmapDescriptorFromDrawable(
+                                R.drawable.dot,
+                                getString(crime.color)
                             )
-                    )
-                    crimeLimit--
-                }
+                        )
+                )
             }
         }
 
-            // Set infowindowAdapter, makes window pop up for markers
-            map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
-            //initalize sdk
-            Places.initialize(applicationContext, "key")
-            // Create a new Places client instance
-            val placesClient: PlacesClient = Places.createClient(this)
-
-            //Initialize AutocompleteSupportFragment
-            val autocompleteFragment =
-                supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
-
-            autocompleteFragment?.setTypeFilter(TypeFilter.ESTABLISHMENT)
-            //TypeFilter.ADDRESS,
-            // set location bias to Seattle only
-            //autocompleteFragment?.setLocationRestriction()
-            autocompleteFragment?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
-            autocompleteFragment?.setOnPlaceSelectedListener(object: PlaceSelectionListener {
-                override fun onPlaceSelected(p0: Place) {
-                    Log.i("what", p0.latLng.toString())
-                    tracker++
-                    if (p0.latLng != null) {
-                        userSelectedLatLong = p0.latLng!!
-                        DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, tracker)
-                    }
-                }
-
-                override fun onError(p0: Status) {
-                    Log.i("what", p0.status.toString())
-                }
-
-            })
-           // Log.i("ybyb", "we got ${allCrimes.size} crimes here")
-
         // Set infowindowAdapter, makes window pop up for markers
-        //map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
+        map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
+        //initalize sdk
+        Places.initialize(applicationContext, "...")
+        // Create a new Places client instance
+        val placesClient: PlacesClient = Places.createClient(this)
+
+        //Initialize AutocompleteSupportFragment
+        val autocompleteFragment =
+            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
+
+        autocompleteFragment?.setTypeFilter(TypeFilter.ESTABLISHMENT)
+        //TypeFilter.ADDRESS,
+        // set location bias to Seattle only
+        //autocompleteFragment?.setLocationRestriction()
+        autocompleteFragment?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+        autocompleteFragment?.setOnPlaceSelectedListener(object: PlaceSelectionListener {
+            override fun onPlaceSelected(p0: Place) {
+                Log.i("what", removeLines.toString() + removeLines.size.toString())
+                if (removeLines.size > 0) {
+                    removeLines[0].remove()
+                    removeLines.removeAt(0)
+                }
+                Log.i("what", removeLines.toString() + removeLines.size.toString())
+                if (p0.latLng != null) {
+                    userSelectedLatLong = p0.latLng!!
+                    DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, removeLines)
+                }
+            }
+
+            override fun onError(p0: Status) {
+                Log.i("what", p0.status.toString())
+            }
+
+        })
+
     }
 
     // Convert drawable into BitmapDescriptor to be used for markers
@@ -243,10 +246,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         }
     }
 
+
+
     override fun onSupportNavigateUp(): Boolean {
         supportFragmentManager.popBackStack()
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        btnFilters.visibility = View.VISIBLE
+
         return super.onNavigateUp()
     }
 
