@@ -27,8 +27,23 @@ class CrimeManager(private val context: Context) {
         q.add(req)
     }
 
-    fun getCrimes(): List<Crime> {
-        return this.crimes
+    fun getCrimes(crimeType: String, occuredAfter: Date): List<Crime> {
+        val filteredCrimes = mutableListOf<Crime>()
+
+        for (i in 0 until crimes.size) {
+            val curCrime = crimes[i]
+
+            if (curCrime.date > occuredAfter) {
+                if (crimeType == "All crimes" || crimeType == curCrime.type) {
+                    filteredCrimes.add(curCrime)
+                }
+            }
+            if (filteredCrimes.size >= CRIME_LIMIT || filteredCrimes.size >= crimes.size) {
+                Log.i("bjw", "filteredCrimes.size is ${filteredCrimes.size}")
+                return filteredCrimes
+            }
+        }
+        return filteredCrimes
     }
 
     private fun convertToCrimes(csv: String, onCrimesReady: (List<Crime>) -> Unit) {
@@ -37,7 +52,7 @@ class CrimeManager(private val context: Context) {
         // Remove the headers
         policeScanner.nextLine()
 
-        for (i in 0..CRIME_LIMIT) {
+        for (i in 1..CRIME_LIMIT) {
             if (policeScanner.hasNextLine()) {
                 val rawCrime = policeScanner.nextLine().split(",")
                 val pos = LatLng(rawCrime[15].toDouble(), rawCrime[14].toDouble())
@@ -50,7 +65,25 @@ class CrimeManager(private val context: Context) {
             }
         }
 
-        onCrimesReady(crimes)
+        onCrimesReady(crimes.sortedByDescending { it.date } as MutableList<Crime>)
+
+        // Get the rest of the crimes while the initial ones are shown
+        val thread = Thread {
+            var allCrimes = mutableListOf<Crime>()
+            while (policeScanner.hasNextLine()) {
+                val rawCrime = policeScanner.nextLine().split(",")
+                val pos = LatLng(rawCrime[15].toDouble(), rawCrime[14].toDouble())
+                val type = rawCrime[6]
+                val typeSpecific = rawCrime[4]
+                val color = colorOf(type)
+                val formatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
+                val date = formatter.parse(rawCrime[8])
+                allCrimes.add(Crime(pos, type, typeSpecific, color, date as Date))
+            }
+            crimes = allCrimes.sortedByDescending { it.date } as MutableList<Crime>
+            Log.i("bjw", "I, the supreme crime manager, have ${crimes.size} crimes")
+        }
+        thread.start()
     }
 
     private fun colorOf(crimeType: String): Int {

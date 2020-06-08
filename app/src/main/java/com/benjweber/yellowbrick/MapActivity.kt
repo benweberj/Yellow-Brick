@@ -5,14 +5,17 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.benjweber.yellowbrick.fragment.FiltersFragment
 import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.google.android.gms.common.api.Status
@@ -22,6 +25,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_map.*
+import org.jetbrains.anko.custom.async
+import org.jetbrains.anko.uiThread
+import java.net.URL
+import com.google.android.gms.maps.model.LatLngBounds //?
+import com.google.android.gms.maps.model.PolylineOptions //?
 import java.text.SimpleDateFormat
 import java.util.*
 import com.google.android.libraries.places.api.Places
@@ -129,7 +137,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             }
         }
 
-        crimeManager.getCrimes().forEach { crime ->
+        crimeManager.getCrimes(filterCrimeTypes, filterDate).forEach { crime ->
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
             if (crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
                 map.addMarker(
@@ -150,7 +158,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Set infowindowAdapter, makes window pop up for markers
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
         //initalize sdk
-        Places.initialize(applicationContext, "")
+        Places.initialize(applicationContext, "...")
         // Create a new Places client instance
         val placesClient: PlacesClient = Places.createClient(this)
 
