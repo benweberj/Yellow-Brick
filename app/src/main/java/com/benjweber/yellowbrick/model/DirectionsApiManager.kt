@@ -71,8 +71,8 @@ class DirectionsApiManager(context: PlaceSelectionListener) {
         val dest = "destination=" + to.latitude + "," + to.longitude
         val sensor = "sensor=false"
         val params = "$origin&$dest&$sensor"
-        val key = null af
-        return "https://maps.googleapis.com/maps/api/directions/json?${params}&key=${key}"
+        val key = "..."
+        return "https://maps.googleapis.com/maps/api/directions/json?$params&key=$key"
     }
 
 

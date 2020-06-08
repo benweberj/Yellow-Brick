@@ -136,7 +136,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             }
         }
 
-        crimeManager.getCrimes().forEach { crime ->
+        crimeManager.getCrimes(filterCrimeTypes, filterDate).forEach { crime ->
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
             if (crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
                 map.addMarker(
@@ -157,7 +157,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Set infowindowAdapter, makes window pop up for markers
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
         //initalize sdk
-        Places.initialize(applicationContext, "fart")
+        Places.initialize(applicationContext, "...")
         // Create a new Places client instance
         val placesClient: PlacesClient = Places.createClient(this)
 
