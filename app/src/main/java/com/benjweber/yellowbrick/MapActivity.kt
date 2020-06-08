@@ -1,6 +1,7 @@
 package com.benjweber.yellowbrick
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -77,6 +78,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Show the back arrow if it is
         if(supportFragmentManager.findFragmentByTag(FiltersFragment.TAG) != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
+        btnAbout.setOnClickListener {
+            val intent = Intent(this, AboutActivity:: class.java)
+            startActivity(intent)
         }
 
         btnFilters.setOnClickListener {
