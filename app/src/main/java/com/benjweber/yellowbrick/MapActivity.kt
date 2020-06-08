@@ -5,17 +5,14 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.benjweber.yellowbrick.fragment.FiltersFragment
 import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.google.android.gms.common.api.Status
@@ -25,11 +22,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_map.*
-import org.jetbrains.anko.custom.async
-import org.jetbrains.anko.uiThread
-import java.net.URL
-import com.google.android.gms.maps.model.LatLngBounds //?
-import com.google.android.gms.maps.model.PolylineOptions //?
 import java.text.SimpleDateFormat
 import java.util.*
 import com.google.android.libraries.places.api.Places
@@ -46,6 +38,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     private lateinit var crimeManager: CrimeManager
     private lateinit var myLocation: LatLng
     private lateinit var userSelectedLatLong: LatLng
+    private val removeLines = mutableListOf<Polyline>()
     var tracker = 0
     private lateinit var polylineFinal : Polyline
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
@@ -157,7 +150,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Set infowindowAdapter, makes window pop up for markers
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
         //initalize sdk
-        Places.initialize(applicationContext, "fart")
+        Places.initialize(applicationContext, "AIzaSyCROCh7-9oNChMfxra7YplVoRQXIXbwETg")
         // Create a new Places client instance
         val placesClient: PlacesClient = Places.createClient(this)
 
@@ -172,11 +165,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         autocompleteFragment?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
         autocompleteFragment?.setOnPlaceSelectedListener(object: PlaceSelectionListener {
             override fun onPlaceSelected(p0: Place) {
-                Log.i("what", p0.latLng.toString())
-                tracker++
+                Log.i("what", removeLines.toString() + removeLines.size.toString())
+                if (removeLines.size > 0) {
+                    removeLines[0].remove()
+                    removeLines.removeAt(0)
+                }
+                Log.i("what", removeLines.toString() + removeLines.size.toString())
                 if (p0.latLng != null) {
                     userSelectedLatLong = p0.latLng!!
-                    DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, tracker)
+                    DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, removeLines)
                 }
             }
 
