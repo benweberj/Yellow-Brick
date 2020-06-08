@@ -150,7 +150,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Set infowindowAdapter, makes window pop up for markers
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
         //initalize sdk
-        Places.initialize(applicationContext, "AIzaSyCROCh7-9oNChMfxra7YplVoRQXIXbwETg")
+        Places.initialize(applicationContext, "")
         // Create a new Places client instance
         val placesClient: PlacesClient = Places.createClient(this)
 
