@@ -67,7 +67,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(OUT_TYPES_SELECTION, filterCrimeTypes)
-        outState.putString(OUT_TIMES_SELECTION, filterDate.toString())
+        outState.putString(OUT_TIMES_SELECTION, filterDate?.toString())
         super.onSaveInstanceState(outState)
     }
 
