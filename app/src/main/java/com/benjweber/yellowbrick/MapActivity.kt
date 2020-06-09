@@ -51,7 +51,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
     // Filter's default date is one day ago relative to newest crime
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
-    private val longDateFormatter = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy")
+    private val longDateFormatter = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)
     private var filterDate = dateFormatter.parse("5/13/2013 0:00")
 
     private var filterCrimeTypes = "All crimes"
@@ -93,7 +93,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
                 timesSpinnerPos = timePos
                 typesSpinnerPos = typePos
-                
+
                 type?.let {
                     filterCrimeTypes = it
                 }
@@ -141,8 +141,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                     filtersFragment = it
                 }
             }
-
-
 
             val bundle = Bundle()
             bundle.putInt(FiltersFragment.OUT_TIMES_SELECTION, timesSpinnerPos)
