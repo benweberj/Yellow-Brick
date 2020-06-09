@@ -138,19 +138,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
         if (locationManager.locationGranted()) {
             locationManager.getLastLocation { loc ->
-                map.addMarker(MarkerOptions().position(loc).title("Thas you"))
+//                map.addMarker(MarkerOptions().position(loc).title("currLocation"))
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 13.0f))
 
                 locationManager.startLocationUpdates()
             }
         }
 
-        var imp = 0
         crimeManager.getCrimes(filterCrimeTypes, filterDate).forEach { crime ->
-            imp++
-            Log.i("bjw", "$imp")
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
-//            if (crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
             map.addMarker(
                 MarkerOptions()
                     .position(crime.pos)
@@ -158,7 +154,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                     .snippet(snippet)
                     .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(crime.color)))
             )
-//            }
         }
 
         // Makes window pop-up for markers
@@ -220,7 +215,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-
                     LOCATION_PERMISSION_CODE
                 )
             }
