@@ -11,6 +11,7 @@ import android.graphics.Canvas
 import android.widget.AdapterView
 import java.text.SimpleDateFormat
 import android.content.pm.PackageManager
+import android.os.PersistableBundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
@@ -50,12 +51,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
     // Filter's default date is one day ago relative to newest crime
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
+    private val longDateFormatter = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy")
     private var filterDate = dateFormatter.parse("5/13/2013 0:00")
 
     private var filterCrimeTypes = "All crimes"
 
     private var timesSpinnerPos = 0
     private var typesSpinnerPos = 0
+
+    companion object {
+        private const val LOCATION_PERMISSION_CODE = 254 // Random #\
+        const val OUT_TIMES_SELECTION = "OUT_TIMES_SELECTION"
+        const val OUT_TYPES_SELECTION = "OUT_TYPES_SELECTION"
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(OUT_TYPES_SELECTION, filterCrimeTypes)
+        outState.putString(OUT_TIMES_SELECTION, filterDate.toString())
+        super.onSaveInstanceState(outState)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +79,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
         locationManager = (application as YBApp).locationManager
         crimeManager = (application as YBApp).crimeManager
+
+        if (savedInstanceState != null) {
+            with (savedInstanceState) {
+                val time = getString(OUT_TIMES_SELECTION)
+                val type = getString(OUT_TYPES_SELECTION)
+                type?.let {
+                    filterCrimeTypes = it
+                }
+                time?.let {
+                    filterDate = longDateFormatter.parse(it)
+                }
+            }
+        }
 
         // Get the SupportMapFragment and get notified when its ready to be used
         val mapFrag = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -193,6 +221,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         }
     }
 
+
+
     // Convert drawable into BitmapDescriptor to be used for markers
     private fun bitmapDescriptorFromDrawable(drawableId: Int, color: String): BitmapDescriptor {
         val drawable = ContextCompat.getDrawable(this, drawableId)
@@ -252,10 +282,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         btnFilters.visibility = View.VISIBLE
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         super.onBackPressed()
-    }
-
-    companion object {
-        private const val LOCATION_PERMISSION_CODE = 254 // Random #
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
