@@ -15,7 +15,7 @@ import kotlin.random.Random
 class CrimeManager(private val context: Context) {
     private val q = Volley.newRequestQueue(context)
     private var crimes = mutableListOf<Crime>()
-    private val CRIME_LIMIT = 1000
+    private val CRIME_LIMIT = 3000
 
     fun fetchCrimes(onCrimesReady: (List<Crime>) -> Unit) {
         val crimesEndpoint = "https://raw.githubusercontent.com/lindsayrgwatt/neighborhood/master/neighborhood/data/historical/Seattle_Police_Department_Police_Report_Incident.csv"
