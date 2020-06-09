@@ -17,7 +17,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.benjweber.yellowbrick.fragment.AboutFragment
 import com.benjweber.yellowbrick.fragment.FiltersFragment
+import com.benjweber.yellowbrick.fragment.FiltersFragment.Companion.TAG
+import com.benjweber.yellowbrick.fragment.AboutFragment.Companion.TAG
 import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -53,6 +56,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
 
     lateinit var filtersFragment: FiltersFragment
+    lateinit var aboutFragment: AboutFragment
 
     // Filter's default date is one day ago relative to newest crime
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
@@ -83,8 +87,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         }
 
         btnAbout.setOnClickListener {
-            val intent = Intent(this, AboutActivity:: class.java)
-            startActivity(intent)
+            if (supportFragmentManager.findFragmentByTag(AboutFragment.TAG) == null) {
+                aboutFragment = AboutFragment()
+            } else {
+                val frag = supportFragmentManager.findFragmentByTag(AboutFragment.TAG) as? AboutFragment
+                frag?.let {
+                    aboutFragment  = it
+                }
+            }
+
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragContainer, aboutFragment, AboutFragment.TAG)
+                .addToBackStack(AboutFragment.TAG)
+                .commit()
+
         }
 
         btnFilters.setOnClickListener {
@@ -97,11 +114,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 }
             }
 
-            supportFragmentManager.addOnBackStackChangedListener {
-                supportActionBar?.setDisplayHomeAsUpEnabled(
-                    supportFragmentManager.backStackEntryCount > 0
-                )
-            }
+
 
             val bundle = Bundle()
             bundle.putInt(FiltersFragment.OUT_TIMES_SELECTION, timesSpinnerPos)
@@ -115,8 +128,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 .addToBackStack(FiltersFragment.TAG)
                 .commit()
 
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //            btnFilters.visibility = View.GONE
+        }
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            supportActionBar?.setDisplayHomeAsUpEnabled(
+                supportFragmentManager.backStackEntryCount > 0
+            )
         }
     }
 

@@ -9,6 +9,9 @@ import com.benjweber.yellowbrick.R
 
 class AboutFragment: Fragment() {
 
+    companion object {
+        val TAG: String = AboutFragment::class.java.simpleName
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

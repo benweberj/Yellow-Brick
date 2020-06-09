@@ -3,9 +3,8 @@
     <string name="title_activity_map">Map</string>
     <string name="filtersButton">Filters</string>
     <string name="aboutTitle">About Us</string>
-    <string name="aboutDesc">Yellow Brick aims to provide users with an up-to-date and
+    <string name="aboutDesc">YellowBrick aims to provide users with an up-to-date and
         localized crime information map so that our users can plan safe walks, jogs and bike rides accordingly.
-        For more information, please follow us @yellowbrick on instagram and twitter.
     </string>
 
     <string name="copy_right" translatable="false">Copyrights © %1$d</string>
@@ -15,6 +14,7 @@
     <string name="timeFilterDesc">Show me crimes from . . .</string>
     <string name="crimeTypeSpinnerDesc">Show me occurrences of . . .</string>
     <string name="filtersDesc">(Current Date: 5/14/2013)</string>
+    <string name="mentions">Created by Chris Hogan, Molly Li, Matthew McVicker, and Ben Weber</string>
 
     <string-array name="times">
         <item>Past day</item>
