@@ -54,11 +54,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     // Filter's default date is one day ago relative to newest crime
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
     private val longDateFormatter = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US)
-    private var filterDate = dateFormatter.parse("5/13/2013 0:00")
+    private var filterDate = dateFormatter.parse("4/13/2013 0:00")
 
     private var filterCrimeTypes = "All crimes"
 
-    private var timesSpinnerPos = 0
+    private var timesSpinnerPos = 2
     private var typesSpinnerPos = 0
 
     companion object {

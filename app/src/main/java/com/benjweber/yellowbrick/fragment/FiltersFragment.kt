@@ -28,7 +28,7 @@ class FiltersFragment : Fragment() {
     }
 
     private var timesSelection = 0
-    private var typesSelection = 0
+    private var typesSelection = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
