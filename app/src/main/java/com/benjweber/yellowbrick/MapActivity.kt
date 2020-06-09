@@ -1,10 +1,10 @@
 package com.benjweber.yellowbrick
 
 import java.util.*
-import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.Manifest
+import android.util.Log
+import android.os.Bundle
+import android.view.View
 import android.graphics.Color
 import android.graphics.Bitmap
 import android.graphics.Canvas

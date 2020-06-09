@@ -14,7 +14,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="28dp"
-        android:layout_marginTop="56dp"
         android:text="About YellowBrick"
         android:textColor="@color/white"
         android:textSize="35sp"
@@ -33,6 +32,18 @@
         android:layout_marginTop="30dp"
         android:text="@string/aboutDesc"
         android:textColor="@color/white" />
+    <TextView
+        android:id="@+id/tvDisclaimer"
+        android:lineSpacingExtra="5dp"
+        android:layout_width="match_parent"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-light"
+        app:layout_constraintTop_toBottomOf="@id/tvAbout"
+        android:layout_marginTop="30dp"
+        android:text="@string/disclaimer"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tvLegendTitle"
@@ -44,7 +55,7 @@
         android:textSize="30sp"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvAbout" />
+        app:layout_constraintTop_toBottomOf="@id/tvDisclaimer" />
 
     <TextView
         android:id="@+id/homicide"

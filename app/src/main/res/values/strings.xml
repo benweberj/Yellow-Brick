@@ -6,6 +6,9 @@
     <string name="aboutDesc">YellowBrick aims to provide users with an up-to-date and
         localized crime information map so that our users can plan safe walks, jogs and bike rides accordingly.
     </string>
+    <string name="disclaimer">This app is a proof-of-concept for real-time crime mapping. The dataset we used
+    is from 2013 and is therefore not useful for understanding the safety of our area in 2020. The current
+    date referenced by the app is May 14th, 2013.</string>
 
     <string name="copy_right" translatable="false">Copyrights © %1$d</string>
     <string name="filtersTitle">Crime Filters</string>
