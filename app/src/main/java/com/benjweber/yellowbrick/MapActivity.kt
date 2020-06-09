@@ -66,6 +66,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+        supportActionBar?.elevation = 0f
 
         locationManager = (application as YBApp).locationManager
         crimeManager = (application as YBApp).crimeManager
