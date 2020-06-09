@@ -29,6 +29,7 @@ import com.benjweber.yellowbrick.fragment.FiltersFragment
 import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
@@ -205,6 +206,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         autocompleteFragment.let {
             it?.setTypeFilter(TypeFilter.ESTABLISHMENT)
             it?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+            it?.setLocationBias(RectangularBounds.newInstance(
+                LatLng(47.499864,  -122.232611),
+                LatLng(47.734542, -122.433396)
+            ))
             it?.setOnPlaceSelectedListener(object : PlaceSelectionListener {
                 override fun onPlaceSelected(p0: Place) {
                     Log.i("what", removeLines.toString() + removeLines.size.toString())
