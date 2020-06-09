@@ -159,7 +159,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Makes window pop-up for markers
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
 
-        Places.initialize(applicationContext, "AIzaSyCGmC-0LKaCM255Vz-CcRauXtCNTYPI_Vk")
+        Places.initialize(applicationContext, "AIzaSyCROCh7-9oNChMfxra7YplVoRQXIXbwETg")
         Places.createClient(this)
 
         val autocompleteFragment =
