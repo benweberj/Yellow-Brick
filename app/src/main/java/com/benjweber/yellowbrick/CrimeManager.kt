@@ -28,8 +28,10 @@ class CrimeManager(private val context: Context) {
     }
 
     fun getCrimes(crimeType: String, occuredAfter: Date): List<Crime> {
+        Log.i("bjw", "type: ${crimeType}, occAfter: $occuredAfter")
         val filteredCrimes = mutableListOf<Crime>()
 
+        Log.i("bjw", "crimes size: ${crimes.size}")
         for (i in 0 until crimes.size) {
             val curCrime = crimes[i]
 
@@ -80,8 +82,10 @@ class CrimeManager(private val context: Context) {
                 val date = formatter.parse(rawCrime[8])
                 allCrimes.add(Crime(pos, type, typeSpecific, color, date as Date))
             }
-            crimes = allCrimes.sortedByDescending { it.date } as MutableList<Crime>
-            Log.i("bjw", "I, the supreme crime manager, have ${crimes.size} crimes")
+            allCrimes.forEach {crime ->
+                crimes.add(crime)
+            }
+            crimes = crimes.sortedByDescending { it.date } as MutableList<Crime>
         }
         thread.start()
     }
