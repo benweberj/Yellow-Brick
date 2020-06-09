@@ -33,7 +33,16 @@
             app:layout_constraintRight_toRightOf="parent" />
     </LinearLayout>
 
-
+<ImageButton
+android:layout_width="70dp"
+android:layout_height="70dp"
+app:layout_constraintBottom_toBottomOf="parent"
+android:id="@+id/btnAbout"
+app:layout_constraintLeft_toLeftOf="parent"
+android:src="@drawable/ic_launcher_foreground"
+app:layout_constraintDimensionRatio="1:1"
+android:scaleType="fitCenter"
+    />
 <!--    <ImageButton-->
 <!--        android:id="@+id/btnSearch"-->
 <!--        android:background="@drawable/dot"-->

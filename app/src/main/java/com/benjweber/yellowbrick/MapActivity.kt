@@ -1,6 +1,7 @@
 package com.benjweber.yellowbrick
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -46,6 +47,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     private lateinit var crimeManager: CrimeManager
     private lateinit var myLocation: LatLng
     private lateinit var userSelectedLatLong: LatLng
+    private val removeLines = mutableListOf<Polyline>()
     var tracker = 0
     private lateinit var polylineFinal : Polyline
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
@@ -77,6 +79,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         // Show the back arrow if it is
         if(supportFragmentManager.findFragmentByTag(FiltersFragment.TAG) != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
+        btnAbout.setOnClickListener {
+            val intent = Intent(this, AboutActivity:: class.java)
+            startActivity(intent)
         }
 
         btnFilters.setOnClickListener {
@@ -172,11 +179,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         autocompleteFragment?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
         autocompleteFragment?.setOnPlaceSelectedListener(object: PlaceSelectionListener {
             override fun onPlaceSelected(p0: Place) {
-                Log.i("what", p0.latLng.toString())
-                tracker++
+                Log.i("what", removeLines.toString() + removeLines.size.toString())
+                if (removeLines.size > 0) {
+                    removeLines[0].remove()
+                    removeLines.removeAt(0)
+                }
+                Log.i("what", removeLines.toString() + removeLines.size.toString())
                 if (p0.latLng != null) {
                     userSelectedLatLong = p0.latLng!!
-                    DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, tracker)
+                    DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, removeLines)
                 }
             }
 
