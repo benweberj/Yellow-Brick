@@ -11,8 +11,6 @@ import android.graphics.Canvas
 import android.widget.AdapterView
 import java.text.SimpleDateFormat
 import android.content.pm.PackageManager
-import android.os.PersistableBundle
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
@@ -74,7 +72,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         outState.putString(OUT_TIMES_SELECTION, filterDate?.toString())
         outState.putInt(OUT_TIMES_POS, timesSpinnerPos)
         outState.putInt(OUT_TYPES_POS, typesSpinnerPos)
-        Toast.makeText(this, "Rotating the app clears the route! It's not a bug, it's a feature...", Toast.LENGTH_LONG).show()
         super.onSaveInstanceState(outState)
     }
 
@@ -175,14 +172,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
 
         if (!locationManager.locationGranted()) getLocationPermission()
 
+        val uwLocation = LatLng(47.659878, -122.305968)
         if (locationManager.locationGranted()) {
             locationManager.getLastLocation { loc ->
                 map.addMarker(MarkerOptions().position(loc).title("currLocation"))
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 13.0f))
-
                 locationManager.startLocationUpdates()
             }
         }
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(uwLocation, 13.0f))
 
         crimeManager.getCrimes(filterCrimeTypes, filterDate).forEach { crime ->
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
