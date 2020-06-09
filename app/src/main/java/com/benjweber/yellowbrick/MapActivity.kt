@@ -63,11 +63,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         private const val LOCATION_PERMISSION_CODE = 254 // Random #\
         const val OUT_TIMES_SELECTION = "OUT_TIMES_SELECTION"
         const val OUT_TYPES_SELECTION = "OUT_TYPES_SELECTION"
+        const val OUT_TIMES_POS = "OUT_TIMES_POS"
+        const val OUT_TYPES_POS = "OUT_TYPES_POS"
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(OUT_TYPES_SELECTION, filterCrimeTypes)
         outState.putString(OUT_TIMES_SELECTION, filterDate?.toString())
+        outState.putInt(OUT_TIMES_POS, timesSpinnerPos)
+        outState.putInt(OUT_TYPES_POS, typesSpinnerPos)
         super.onSaveInstanceState(outState)
     }
 
@@ -84,6 +88,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
             with (savedInstanceState) {
                 val time = getString(OUT_TIMES_SELECTION)
                 val type = getString(OUT_TYPES_SELECTION)
+                val timePos = getInt(OUT_TIMES_POS)
+                val typePos = getInt(OUT_TYPES_POS)
+
+                timesSpinnerPos = timePos
+                typesSpinnerPos = typePos
+                
                 type?.let {
                     filterCrimeTypes = it
                 }
