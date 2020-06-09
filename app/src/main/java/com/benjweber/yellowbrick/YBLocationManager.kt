@@ -1,13 +1,15 @@
 package com.benjweber.yellowbrick
 
 import android.Manifest
+import android.util.Log
+import android.os.Looper
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Looper
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
 
 class YBLocationManager(private val context: Context) {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -19,15 +21,20 @@ class YBLocationManager(private val context: Context) {
     }
 
     // Gets the user's last known location and executes the given callback when done
-    fun getLastLocation(onLastLocation: (Location) -> Unit) {
+    @SuppressLint("MissingPermission")
+    fun getLastLocation(onLastLocation: (LatLng) -> Unit) {
         if (locationGranted()) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                if (location != null) onLastLocation(location)
+            fusedLocationClient.lastLocation.addOnSuccessListener { loc: Location? ->
+                if (loc != null) {
+                    val location = LatLng(loc.latitude, loc.longitude)
+                    onLastLocation(location)
+                }
             }
         }
     }
 
     // Start making location requests at a specified interval
+    @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
         val locationRequest = LocationRequest.create()?.apply {
             interval = 60000 // 1 minute
@@ -52,7 +59,7 @@ class YBLocationManager(private val context: Context) {
     // Called when the user's location is retrieved
     private val locationCallback: LocationCallback = object: LocationCallback() {
         override fun onLocationResult(p0: LocationResult?) {
-            Log.i("ybyb", "successfully requested the user's location")
+            Log.i("ybyb", "We got em")
         }
     }
 }
