@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.fragment_filters.*
 
 class FiltersFragment : Fragment() {
+    val TAG: String = FiltersFragment::class.java.simpleName
 
     companion object {
         val TAG: String = FiltersFragment::class.java.simpleName

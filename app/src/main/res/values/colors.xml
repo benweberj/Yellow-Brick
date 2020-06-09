@@ -2,6 +2,7 @@
 <resources>
     <color name="yellow">#FCD858</color>
     <color name="dark_yellow">#DDB113</color>
+    <color name="holo_yellow">#77FCD858</color>
     <color name="navy_blue">#242F3E</color>
     <color name="white">#FFFFFF</color>
 

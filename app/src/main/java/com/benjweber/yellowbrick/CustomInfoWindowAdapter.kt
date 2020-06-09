@@ -33,7 +33,7 @@ class CustomInfoWindowAdapter(private val context: Context) : GoogleMap.InfoWind
         val infoWindow = view.findViewById<LinearLayout>(R.id.infoWindow)
 
         tvTitle.text = "TYPE: ${marker.title}"
-        tvDate.text = "DATE: ${rawDate.substring(4, 9)}, ${rawDate.substring(23, rawDate.length)}" // day, year
+        tvDate.text = "DATE: ${rawDate.substring(4, 10)}, ${rawDate.substring(23, rawDate.length)}" // day, year
         tvTime.text = "TIME: ${rawDate.substring(10, 22)}"
         tvTypeSpecific.text = "CRIME CODE: $typeSpecific"
         tvTitle.isSelected = true

@@ -1,38 +1,30 @@
 package com.benjweber.yellowbrick
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.PorterDuff
-import androidx.appcompat.app.AppCompatActivity
+import java.util.*
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.Manifest
+import android.graphics.Color
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.widget.AdapterView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import java.text.SimpleDateFormat
+import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import com.benjweber.yellowbrick.fragment.FiltersFragment
-import com.benjweber.yellowbrick.model.DirectionsApiManager
-import com.google.android.gms.common.api.Status
-import com.google.android.gms.maps.CameraUpdateFactory
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.common.api.Status
+import kotlinx.android.synthetic.main.activity_map.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
-import kotlinx.android.synthetic.main.activity_map.*
-import org.jetbrains.anko.custom.async
-import org.jetbrains.anko.uiThread
-import java.net.URL
-import com.google.android.gms.maps.model.LatLngBounds //?
-import com.google.android.gms.maps.model.PolylineOptions //?
-import java.text.SimpleDateFormat
-import java.util.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.benjweber.yellowbrick.fragment.AboutFragment
+import com.benjweber.yellowbrick.fragment.FiltersFragment
+import com.benjweber.yellowbrick.model.DirectionsApiManager
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
@@ -41,11 +33,12 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 
 
+
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemSelectedListener {
-    private lateinit var map: GoogleMap //made this public so it is accessible in DirectionsApiManager
+    lateinit var map: GoogleMap // public so it's accessible in DirectionsApiManager
     private lateinit var locationManager: YBLocationManager
     private lateinit var crimeManager: CrimeManager
-    private lateinit var myLocation: LatLng
+//    private lateinit var myLocation: LatLng
     private lateinit var userSelectedLatLong: LatLng
     private val removeLines = mutableListOf<Polyline>()
     var tracker = 0
@@ -53,6 +46,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     //private lateinit var autocompleteFragment: AutocompleteSupportFragment?
 
     lateinit var filtersFragment: FiltersFragment
+    lateinit var aboutFragment: AboutFragment
 
     // Filter's default date is one day ago relative to newest crime
     private val dateFormatter = SimpleDateFormat("M/dd/yyyy H:mm", Locale.US)
@@ -66,6 +60,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+        supportActionBar?.elevation = 0f
 
         locationManager = (application as YBApp).locationManager
         crimeManager = (application as YBApp).crimeManager
@@ -82,8 +77,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
         }
 
         btnAbout.setOnClickListener {
-            val intent = Intent(this, AboutActivity:: class.java)
-            startActivity(intent)
+            if (supportFragmentManager.findFragmentByTag(AboutFragment.TAG) == null) {
+                aboutFragment = AboutFragment()
+            } else {
+                val frag = supportFragmentManager.findFragmentByTag(AboutFragment.TAG) as? AboutFragment
+                frag?.let {
+                    aboutFragment  = it
+                }
+            }
+
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragContainer, aboutFragment, AboutFragment.TAG)
+                .addToBackStack(AboutFragment.TAG)
+                .commit()
+
         }
 
         btnFilters.setOnClickListener {
@@ -96,11 +104,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 }
             }
 
-            supportFragmentManager.addOnBackStackChangedListener {
-                supportActionBar?.setDisplayHomeAsUpEnabled(
-                    supportFragmentManager.backStackEntryCount > 0
-                )
-            }
+
 
             val bundle = Bundle()
             bundle.putInt(FiltersFragment.OUT_TIMES_SELECTION, timesSpinnerPos)
@@ -114,8 +118,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 .addToBackStack(FiltersFragment.TAG)
                 .commit()
 
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //            btnFilters.visibility = View.GONE
+        }
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            supportActionBar?.setDisplayHomeAsUpEnabled(
+                supportFragmentManager.backStackEntryCount > 0
+            )
         }
     }
 
@@ -123,80 +133,64 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.dark_map_style))
-//        val latLongB = LatLngBounds.Builder()
-
 
         if (!locationManager.locationGranted()) getLocationPermission()
-        if (locationManager.locationGranted()) {
-            locationManager.getLastLocation { location ->
-                myLocation = LatLng(location.latitude, location.longitude)
-                map.addMarker(MarkerOptions().position(myLocation).title("currLocation"))
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13.0f))
 
+        if (locationManager.locationGranted()) {
+            locationManager.getLastLocation { loc ->
+//                map.addMarker(MarkerOptions().position(loc).title("currLocation"))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 13.0f))
 
                 locationManager.startLocationUpdates()
-
-                //this will probably need to move somewhere else
-//                DirectionsApiManager(this).getDirectionData(map, myLocation)
-//                val directionsApiManager = DirectionsApiManager(this)
-//                directionsApiManager.getDirectionData(map, myLocation)
             }
         }
 
         crimeManager.getCrimes(filterCrimeTypes, filterDate).forEach { crime ->
             val snippet = "${crime.date.toString()}...${crime.typeSpecific}...${crime.color}"
-            if (crime.date > filterDate && (crime.type == filterCrimeTypes || filterCrimeTypes == "All crimes")) {
-                map.addMarker(
-                    MarkerOptions()
-                        .position(crime.pos)
-                        .title(crime.type)
-                        .snippet(snippet)
-                        .icon(
-                            bitmapDescriptorFromDrawable(
-                                R.drawable.dot,
-                                getString(crime.color)
-                            )
-                        )
-                )
-            }
+            map.addMarker(
+                MarkerOptions()
+                    .position(crime.pos)
+                    .title(crime.type)
+                    .snippet(snippet)
+                    .icon(bitmapDescriptorFromDrawable(R.drawable.dot, getString(crime.color)))
+            )
         }
 
-        // Set infowindowAdapter, makes window pop up for markers
+        // Makes window pop-up for markers
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(this))
-        //initalize sdk
-        Places.initialize(applicationContext, "...")
-        // Create a new Places client instance
-        val placesClient: PlacesClient = Places.createClient(this)
 
-        //Initialize AutocompleteSupportFragment
+        Places.initialize(applicationContext, "AIzaSyCROCh7-9oNChMfxra7YplVoRQXIXbwETg")
+        Places.createClient(this)
+
         val autocompleteFragment =
             supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
+        autocompleteFragment.let {
+            it?.setTypeFilter(TypeFilter.ESTABLISHMENT)
+            it?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+            it?.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+                override fun onPlaceSelected(p0: Place) {
+                    Log.i("what", removeLines.toString() + removeLines.size.toString())
+                    if (removeLines.size > 0) {
+                        removeLines[0].remove()
+                        removeLines.removeAt(0)
+                    }
+                    Log.i("what", removeLines.toString() + removeLines.size.toString())
+                    if (p0.latLng != null) {
+                        userSelectedLatLong = p0.latLng as LatLng
+                        locationManager.getLastLocation { loc ->
+                            DirectionsApiManager(this).getDirectionData(
+                                map, loc, userSelectedLatLong, removeLines
+                            )
+                        }
 
-        autocompleteFragment?.setTypeFilter(TypeFilter.ESTABLISHMENT)
-        //TypeFilter.ADDRESS,
-        // set location bias to Seattle only
-        //autocompleteFragment?.setLocationRestriction()
-        autocompleteFragment?.setPlaceFields(mutableListOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
-        autocompleteFragment?.setOnPlaceSelectedListener(object: PlaceSelectionListener {
-            override fun onPlaceSelected(p0: Place) {
-                Log.i("what", removeLines.toString() + removeLines.size.toString())
-                if (removeLines.size > 0) {
-                    removeLines[0].remove()
-                    removeLines.removeAt(0)
+                    }
                 }
-                Log.i("what", removeLines.toString() + removeLines.size.toString())
-                if (p0.latLng != null) {
-                    userSelectedLatLong = p0.latLng!!
-                    DirectionsApiManager(this).getDirectionData(map, myLocation, userSelectedLatLong, removeLines)
+
+                override fun onError(p0: Status) {
+                    Log.i("what", p0.status.toString())
                 }
-            }
-
-            override fun onError(p0: Status) {
-                Log.i("what", p0.status.toString())
-            }
-
-        })
-
+            })
+        }
     }
 
     // Convert drawable into BitmapDescriptor to be used for markers
@@ -221,7 +215,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, AdapterView.OnItemS
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-
                     LOCATION_PERMISSION_CODE
                 )
             }
